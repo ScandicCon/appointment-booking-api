@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointment Booking Frontend</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+      line-height: 1.5;
+    }
+    .container {
+      width: min(1180px, 94%);
+      margin: 0 auto;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 0;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #374151;
+      font-size: 14px;
+    }
+    .btn {
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .btn:hover { background: #1d4ed8; }
+    .btn.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    .btn.danger {
+      background: #dc2626;
+    }
+    .btn.danger:hover {
+      background: #b91c1c;
+    }
+    .hero {
+      padding: 46px 0 24px;
+    }
+    .hero h1 {
+      font-size: 38px;
+      line-height: 1.1;
+      margin-bottom: 14px;
+      color: #111827;
+    }
+    .hero p {
+      color: #4b5563;
+      max-width: 760px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    .status-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .pill {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(17,24,39,0.05);
+    }
+    .card h2 {
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
+    .card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .card p {
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+    form {
+      display: grid;
+      gap: 12px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 14px;
+      color: #374151;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 14px;
+      background: #fff;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .message {
+      margin-top: 10px;
+      font-size: 14px;
+      min-height: 22px;
+    }
+    .message.success { color: #15803d; }
+    .message.error { color: #b91c1c; }
+    .section-title {
+      font-size: 28px;
+      margin: 24px 0 14px;
+    }
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+    .item {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 17px;
+    }
+    .muted { color: #6b7280; font-size: 14px; }
+    .mono {
+      font-family: Consolas, monospace;
+      background: #111827;
+      color: #f9fafb;
+      padding: 14px;
+      border-radius: 14px;
+      overflow: auto;
+      font-size: 13px;
+    }
+    .hidden { display: none; }
+    footer {
+      padding: 30px 0 50px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    @media (max-width: 920px) {
+      .grid, .grid-3 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="logo">Booking Frontend</div>
+      <nav class="nav-links">
+        <a href="#auth">Auth</a>
+        <a href="#services">Services</a>
+        <a href="#bookings">Bookings</a>
+        <button class="btn secondary" id="loadProfileBtn" type="button">Обновить профиль</button>
+        <button class="btn danger" id="logoutBtn" type="button">Выйти</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Frontend для твоего FastAPI booking API</h1>
+      <p>
+        Здесь уже есть регистрация, логин, создание услуг мастером, создание бронирования клиентом,
+        просмотр своих услуг и записей, а также подтверждение записи мастером.
+      </p>
+      <div class="status-bar">
+        <div class="pill">Backend URL: <span id="apiUrlLabel"></span></div>
+        <div class="pill">Токен: <span id="tokenStatus">не сохранён</span></div>
+        <div class="pill">Текущий пользователь: <span id="currentUserLabel">не загружен</span></div>
+      </div>
+    </section>
+
+    <section id="auth">
+      <h2 class="section-title">Авторизация</h2>
+      <div class="grid">
+        <div class="card">
+          <h2>Регистрация</h2>
+          <form id="registerForm">
+            <label>
+              Email
+              <input type="email" name="email" required />
+            </label>
+            <label>
+              Username
+              <input type="text" name="username" required />
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" required />
+            </label>
+            <button class="btn" type="submit">Зарегистрироваться</button>
+          </form>
+          <div class="message" id="registerMessage"></div>
+        </div>
+
+        <div class="card">
+          <h2>Логин</h2>
+          <form id="loginForm">
+            <label>
+              Email
+              <input type="email" name="email" required />
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" required />
+            </label>
+            <button class="btn" type="submit">Войти</button>
+          </form>
+          <div class="message" id="loginMessage"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Профиль</h2>
+      <div class="card">
+        <div class="row" style="justify-content: space-between; margin-bottom: 12px;">
+          <h2 style="margin:0;">Текущий пользователь</h2>
+          <button class="btn secondary" type="button" id="getMeBtn">Получить /users/me</button>
+        </div>
+        <pre class="mono" id="profileBox">Пока пусто</pre>
+      </div>
+    </section>
+
+    <section id="services">
+      <h2 class="section-title">Услуги</h2>
+      <div class="grid">
+        <div class="card">
+          <h2>Создать услугу</h2>
+          <p>Работает для пользователя с ролью <strong>master</strong>.</p>
+          <form id="createServiceForm">
+            <label>
+              Название
+              <input type="text" name="title" required />
+            </label>
+            <label>
+              Описание
+              <textarea name="description"></textarea>
+            </label>
+            <label>
+              Длительность (минуты)
+              <input type="number" name="duration_minutes" min="1" required />
+            </label>
+            <label>
+              Цена
+              <input type="number" name="price" min="0" step="0.01" required />
+            </label>
+            <button class="btn" type="submit">Создать услугу</button>
+          </form>
+          <div class="message" id="serviceCreateMessage"></div>
+        </div>
+
+        <div class="card">
+          <h2>Загрузить услуги</h2>
+          <div class="row">
+            <button class="btn secondary" id="loadAllServicesBtn" type="button">Все услуги</button>
+            <button class="btn secondary" id="loadMyServicesBtn" type="button">Мои услуги</button>
+          </div>
+          <div class="message" id="servicesMessage"></div>
+          <div class="list" id="servicesList" style="margin-top: 14px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bookings">
+      <h2 class="section-title">Бронирования</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h2>Создать бронирование</h2>
+          <p>Работает для пользователя с ролью <strong>client</strong>.</p>
+          <form id="createBookingForm">
+            <label>
+              ID услуги
+              <input type="number" name="service_id" min="1" required />
+            </label>
+            <label>
+              Дата и время начала
+              <input type="datetime-local" name="start_time" required />
+            </label>
+            <button class="btn" type="submit">Создать запись</button>
+          </form>
+          <div class="message" id="bookingCreateMessage"></div>
+        </div>
+
+        <div class="card">
+          <h2>Мои записи</h2>
+          <div class="row">
+            <button class="btn secondary" id="loadMyBookingsBtn" type="button">Загрузить</button>
+          </div>
+          <div class="message" id="myBookingsMessage"></div>
+          <div class="list" id="myBookingsList" style="margin-top: 14px;"></div>
+        </div>
+
+        <div class="card">
+          <h2>Записи мастера</h2>
+          <div class="row" style="margin-bottom: 12px;">
+            <button class="btn secondary" id="loadMasterBookingsBtn" type="button">Загрузить</button>
+          </div>
+          <form id="confirmBookingForm">
+            <label>
+              ID бронирования
+              <input type="number" name="booking_id" min="1" required />
+            </label>
+            <button class="btn" type="submit">Подтвердить запись</button>
+          </form>
+          <div class="message" id="masterBookingsMessage"></div>
+          <div class="list" id="masterBookingsList" style="margin-top: 14px;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      Frontend for FastAPI booking project • vanilla HTML/CSS/JS • ready for GitHub portfolio
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE_URL = "http://127.0.0.1:8000";
+    const tokenKey = "booking_token";
+
+    const apiUrlLabel = document.getElementById("apiUrlLabel");
+    const tokenStatus = document.getElementById("tokenStatus");
+    const currentUserLabel = document.getElementById("currentUserLabel");
+    const profileBox = document.getElementById("profileBox");
+
+    apiUrlLabel.textContent = API_BASE_URL;
+
+    function getToken() {
+      return localStorage.getItem(tokenKey);
+    }
+
+    function setToken(token) {
+      localStorage.setItem(tokenKey, token);
+      updateTokenStatus();
+    }
+
+    function clearToken() {
+      localStorage.removeItem(tokenKey);
+      updateTokenStatus();
+      currentUserLabel.textContent = "не загружен";
+      profileBox.textContent = "Пока пусто";
+    }
+
+    function updateTokenStatus() {
+      tokenStatus.textContent = getToken() ? "сохранён" : "не сохранён";
+    }
+
+    function setMessage(elementId, text, type = "success") {
+      const el = document.getElementById(elementId);
+      el.textContent = text;
+      el.className = `message ${type}`;
+    }
+
+    async function apiRequest(path, options = {}) {
+      const headers = options.headers ? { ...options.headers } : {};
+      headers["Content-Type"] = "application/json";
+
+      const token = getToken();
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}${path}`, {
+        ...options,
+        headers,
+      });
+
+      const contentType = response.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : await response.text();
+
+      if (!response.ok) {
+        const message = typeof data === "object" && data !== null
+          ? data.detail || JSON.stringify(data)
+          : data;
+        throw new Error(message || "Request failed");
+      }
+
+      return data;
+    }
+
+    function renderServices(list) {
+      const container = document.getElementById("servicesList");
+      container.innerHTML = "";
+
+      if (!list.length) {
+        container.innerHTML = '<div class="item">Услуги не найдены</div>';
+        return;
+      }
+
+      list.forEach(service => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <strong>${service.title}</strong>
+          <div class="muted">ID: ${service.id}</div>
+          <div class="muted">Описание: ${service.description ?? "—"}</div>
+          <div class="muted">Длительность: ${service.duration_minutes} мин</div>
+          <div class="muted">Цена: ${service.price}</div>
+          <div class="muted">Master ID: ${service.master_id}</div>
+          <div class="muted">Активна: ${service.is_active}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderBookings(list, elementId) {
+      const container = document.getElementById(elementId);
+      container.innerHTML = "";
+
+      if (!list.length) {
+        container.innerHTML = '<div class="item">Записи не найдены</div>';
+        return;
+      }
+
+      list.forEach(booking => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <strong>Booking #${booking.id}</strong>
+          <div class="muted">Client ID: ${booking.client_id}</div>
+          <div class="muted">Master ID: ${booking.master_id}</div>
+          <div class="muted">Service ID: ${booking.service_id}</div>
+          <div class="muted">Start: ${booking.start_time}</div>
+          <div class="muted">End: ${booking.end_time}</div>
+          <div class="muted">Status: ${booking.status}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function loadProfile() {
+      try {
+        const user = await apiRequest("/users/me", { method: "GET" });
+        profileBox.textContent = JSON.stringify(user, null, 2);
+        currentUserLabel.textContent = `${user.username} (${user.role})`;
+      } catch (error) {
+        profileBox.textContent = error.message;
+        currentUserLabel.textContent = "не загружен";
+      }
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const payload = {
+        email: form.email.value,
+        username: form.username.value,
+        password: form.password.value,
+      };
+
+      try {
+        const data = await apiRequest("/auth/register", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        setMessage("registerMessage", `Пользователь ${data.username} создан`, "success");
+        form.reset();
+      } catch (error) {
+        setMessage("registerMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const payload = {
+        email: form.email.value,
+        password: form.password.value,
+      };
+
+      try {
+        const data = await apiRequest("/auth/login", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        setToken(data.access_token);
+        setMessage("loginMessage", "Логин успешен", "success");
+        form.reset();
+        await loadProfile();
+      } catch (error) {
+        setMessage("loginMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("createServiceForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const payload = {
+        title: form.title.value,
+        description: form.description.value || null,
+        duration_minutes: Number(form.duration_minutes.value),
+        price: Number(form.price.value),
+      };
+
+      try {
+        await apiRequest("/services/", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        setMessage("serviceCreateMessage", "Услуга создана", "success");
+        form.reset();
+      } catch (error) {
+        setMessage("serviceCreateMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("loadAllServicesBtn").addEventListener("click", async () => {
+      try {
+        const services = await apiRequest("/services/", { method: "GET" });
+        renderServices(services);
+        setMessage("servicesMessage", "Все услуги загружены", "success");
+      } catch (error) {
+        setMessage("servicesMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("loadMyServicesBtn").addEventListener("click", async () => {
+      try {
+        const services = await apiRequest("/services/me", { method: "GET" });
+        renderServices(services);
+        setMessage("servicesMessage", "Мои услуги загружены", "success");
+      } catch (error) {
+        setMessage("servicesMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("createBookingForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const startTime = new Date(form.start_time.value).toISOString();
+      const payload = {
+        service_id: Number(form.service_id.value),
+        start_time: startTime,
+      };
+
+      try {
+        await apiRequest("/bookings/", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        setMessage("bookingCreateMessage", "Бронирование создано", "success");
+        form.reset();
+      } catch (error) {
+        setMessage("bookingCreateMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("loadMyBookingsBtn").addEventListener("click", async () => {
+      try {
+        const bookings = await apiRequest("/bookings/me", { method: "GET" });
+        renderBookings(bookings, "myBookingsList");
+        setMessage("myBookingsMessage", "Мои записи загружены", "success");
+      } catch (error) {
+        setMessage("myBookingsMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("loadMasterBookingsBtn").addEventListener("click", async () => {
+      try {
+        const bookings = await apiRequest("/bookings/master", { method: "GET" });
+        renderBookings(bookings, "masterBookingsList");
+        setMessage("masterBookingsMessage", "Записи мастера загружены", "success");
+      } catch (error) {
+        setMessage("masterBookingsMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("confirmBookingForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.target;
+      const bookingId = Number(form.booking_id.value);
+
+      try {
+        await apiRequest(`/bookings/${bookingId}/status`, {
+          method: "PATCH",
+          body: JSON.stringify({}),
+        });
+        setMessage("masterBookingsMessage", `Запись #${bookingId} подтверждена`, "success");
+        form.reset();
+      } catch (error) {
+        setMessage("masterBookingsMessage", error.message, "error");
+      }
+    });
+
+    document.getElementById("getMeBtn").addEventListener("click", loadProfile);
+    document.getElementById("loadProfileBtn").addEventListener("click", loadProfile);
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      clearToken();
+      setMessage("loginMessage", "Вы вышли из аккаунта", "success");
+    });
+
+    updateTokenStatus();
+    if (getToken()) {
+      loadProfile();
+    }
+  </script>
+</body>
+</html>
